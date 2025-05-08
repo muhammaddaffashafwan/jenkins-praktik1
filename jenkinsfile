@@ -26,36 +26,36 @@ pipeline {
             }
         }
     }
-}
 
-post {
-    success {
-        script {
-            def payload = [
-                content: "✅ Build SUCCESS on `${env.BRANCH_NAME}`\nURL: ${env.BUILD_URL}"
-            ]
+    post {
+        success {
+            script {
+                def payload = [
+                    content: "✅ Build SUCCESS on `${env.BRANCH_NAME}`\nURL: ${env.BUILD_URL}"
+                ]
 
-            httpRequest(
-                httpMode: 'POST',
-                contentType: 'APPLICATION_JSON',
-                requestBody: groovy.json.JsonOutput.toJson(payload),
-                url: 'https://discord.com/api/webhooks/1369979563513352313/CWu5RVfuo9cxZRv72gHWnq8o5akFYZ1XJAunVpt2ZNTHRp88HzNTZZJYLZWuPDX2CGMV'
-            )
+                httpRequest(
+                    httpMode: 'POST',
+                    contentType: 'APPLICATION_JSON',
+                    requestBody: groovy.json.JsonOutput.toJson(payload),
+                    url: 'https://discord.com/api/webhooks/1369979563513352313/CWu5RVfuo9cxZRv72gHWnq8o5akFYZ1XJAunVpt2ZNTHRp88HzNTZZJYLZWuPDX2CGMV'
+                )
+            }
         }
-    }
 
-    failure {
-        script {
-            def payload = [
-                content: "❌ Build FAILED on `${env.BRANCH_NAME}`\nURL: ${env.BUILD_URL}"
-            ]
+        failure {
+            script {
+                def payload = [
+                    content: "❌ Build FAILED on `${env.BRANCH_NAME}`\nURL: ${env.BUILD_URL}"
+                ]
 
-            httpRequest(
-                httpMode: 'POST',
-                contentType: 'APPLICATION_JSON',
-                requestBody: groovy.json.JsonOutput.toJson(payload),
-                url: 'https://discord.com/api/webhooks/1369979563513352313/CWu5RVfuo9cxZRv72gHWnq8o5akFYZ1XJAunVpt2ZNTHRp88HzNTZZJYLZWuPDX2CGMV'
-            )
+                httpRequest(
+                    httpMode: 'POST',
+                    contentType: 'APPLICATION_JSON',
+                    requestBody: groovy.json.JsonOutput.toJson(payload),
+                    url: 'https://discord.com/api/webhooks/1369979563513352313/CWu5RVfuo9cxZRv72gHWnq8o5akFYZ1XJAunVpt2ZNTHRp88HzNTZZJYLZWuPDX2CGMV'
+                )
+            }
         }
     }
 }
