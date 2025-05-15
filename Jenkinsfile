@@ -2,33 +2,39 @@ pipeline {
     agent any
 
     environment {
-        VENV_DIR = ".venv"
+        VENV_DIR = ".venv"  // Directory untuk virtual environment
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
-                sh '''
-                #!/bin/bash
-                python3 -m venv ${VENV_DIR}
-                source ${VENV_DIR}/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                '''
+                script {
+                    // Buat virtual environment hanya jika belum ada
+                    sh '''
+                    python3 -m venv ${VENV_DIR}
+                    source ${VENV_DIR}/bin/activate
+                    ${VENV_DIR}/bin/pip install --upgrade pip
+                    ${VENV_DIR}/bin/pip install -r requirements.txt
+                    '''
+                }
             }
         }
+
         stage('Run Tests') {
             steps {
-                sh '''
-                #!/bin/bash
-                source ${VENV_DIR}/bin/activate
-                python -m pytest
-                '''
+                script {
+                    // Jalankan tes menggunakan virtual environment
+                    sh '''
+                    source ${VENV_DIR}/bin/activate
+                    ${VENV_DIR}/bin/python -m pytest || exit 1
+                    '''
+                }
             }
         }
+
         stage('Deploy') {
             steps {
-                echo 'Deploying...'
+                echo '🚀 Deploying...'
             }
         }
     }
@@ -39,6 +45,7 @@ pipeline {
                 def payload = [
                     content: "✅ Build SUCCESS on `${env.BRANCH_NAME}`\nURL: ${env.BUILD_URL}"
                 ]
+
                 httpRequest(
                     httpMode: 'POST',
                     contentType: 'APPLICATION_JSON',
@@ -47,11 +54,13 @@ pipeline {
                 )
             }
         }
+
         failure {
             script {
                 def payload = [
                     content: "❌ Build FAILED on `${env.BRANCH_NAME}`\nURL: ${env.BUILD_URL}"
                 ]
+
                 httpRequest(
                     httpMode: 'POST',
                     contentType: 'APPLICATION_JSON',
