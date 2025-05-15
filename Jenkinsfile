@@ -1,32 +1,37 @@
 pipeline {
     agent any
 
+    environment {
+        VENV_DIR = ".venv"  // Directory untuk virtual environment
+    }
+
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh '''
+                python3 -m venv ${VENV_DIR}
+                source ${VENV_DIR}/bin/activate
+                ${VENV_DIR}/bin/pip install --upgrade pip
+                ${VENV_DIR}/bin/pip install -r requirements.txt
+                '''
             }
         }
-
         stage('Run Tests') {
             steps {
-                sh 'pytest test_app.py'
+                sh '''
+                source ${VENV_DIR}/bin/activate
+                ${VENV_DIR}/bin/python -m pytest
+                '''
             }
         }
-
         stage('Deploy') {
-            when {
-                anyOf {
-                    branch 'main'
-                    branch pattern: "release/.*", comparator: "REGEXP"
-                }
-            }
             steps {
-                echo "Simulating deploy from branch ${env.BRANCH_NAME}"
+                echo 'Deploying...'
             }
         }
     }
 }
+
 
 post {
     success {
