@@ -2,19 +2,20 @@ pipeline {
     agent any
 
     environment {
-        VENV_DIR = ".venv"  // Directory untuk virtual environment
+        VENV_DIR = ".venv"
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Buat virtual environment hanya jika belum ada
                     sh '''
-                    python3 -m venv ${VENV_DIR}
-                    source ${VENV_DIR}/bin/activate
-                    ${VENV_DIR}/bin/pip install --upgrade pip
-                    ${VENV_DIR}/bin/pip install -r requirements.txt
+                    bash -c "
+                        python3 -m venv ${VENV_DIR}
+                        source ${VENV_DIR}/bin/activate
+                        ${VENV_DIR}/bin/pip install --upgrade pip
+                        ${VENV_DIR}/bin/pip install -r requirements.txt
+                    "
                     '''
                 }
             }
@@ -23,10 +24,11 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Jalankan tes menggunakan virtual environment
                     sh '''
-                    source ${VENV_DIR}/bin/activate
-                    ${VENV_DIR}/bin/python -m pytest || exit 1
+                    bash -c "
+                        source ${VENV_DIR}/bin/activate
+                        ${VENV_DIR}/bin/python -m pytest || exit 1
+                    "
                     '''
                 }
             }
